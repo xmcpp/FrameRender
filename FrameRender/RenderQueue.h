@@ -4,22 +4,22 @@
 相当于渲染管线，数据和各种状态都设置到这个对象中
 */
 
-class RenderTarget;
+class RenderSystem;
 class RenderInput;
 
 class RenderQueue
 {
 public:
     //构造主渲染窗口
-    RenderQueue( HWND hwnd , int width , int height , COLOR_TYPE type = R8G8B8A8 );
+    RenderQueue( COLOR_TYPE type = R8G8B8A8 );
     ~RenderQueue();
 public:
-	void setRenderTarget( RenderTarget * target )
+	void setRenderSystem( RenderSystem * system )
     {
-        m_backTarget = target ;
+        m_rs = system ;
     }
 
-    RenderTarget * getRenderTarget(){ return m_backTarget; }
+    RenderSystem * getRenderSystem(){ return m_rs; }
 
 	void setWorldMat( const MATRIX4X4 & mat ){ m_worldMat = mat ;}
 	void setViewMat( const MATRIX4X4 & mat ){ m_viewMat = mat ;}
@@ -84,11 +84,8 @@ private:
     */
     void drawScanLine( VERTEX_TYPE_TRANSED_PTR v0 , VERTEX_TYPE_TRANSED_PTR v1 );
 
-    //在渲染目标上设置像素内容
-    void setPixel( int x , int y , const ColorValue & val );
 private:
-	RenderTarget * m_backTarget; //后缓冲
-    RenderTarget * m_frontTarget; //前缓冲
+	RenderSystem * m_rs; //渲染系统
 
 	MATRIX4X4 m_worldMat;
 	MATRIX4X4 m_viewMat;
@@ -101,8 +98,6 @@ private: //配置部分
     FILL_MODE m_fillType; //光栅器填充方式
     FACE_CULLING_TYPE m_cullingType; //记录面裁减方式
 
-
-    HWND m_mainHwnd;
 };
 
 

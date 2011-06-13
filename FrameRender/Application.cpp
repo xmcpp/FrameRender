@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Application.h"
-#include "RenderTarget.h"
+#include "RenderSystem.h"
 #include "RenderObject.h"
 #include "Camera.h"
 

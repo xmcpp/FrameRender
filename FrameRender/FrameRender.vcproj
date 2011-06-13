@@ -208,11 +208,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RenderTarget.cpp"
+				RelativePath=".\RenderSystem.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\RenderTarget.h"
+				RelativePath=".\RenderSystem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RenderSystemGDI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RenderSystemGDI.h"
 				>
 			</File>
 		</Filter>

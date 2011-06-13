@@ -1,37 +1,27 @@
 #include "stdafx.h"
 #include "RenderQueue.h"
 #include "RenderInput.h"
-#include "RenderTarget.h"
+#include "RenderSystem.h"
 
-RenderQueue::RenderQueue( HWND hwnd , int width , int height , COLOR_TYPE type )
-:m_mainHwnd(hwnd),m_enableDrawFrame( false ),m_cullingType(CCW),m_fillType(FILL_SOLIDE)
+RenderQueue::RenderQueue( COLOR_TYPE type )
+:m_enableDrawFrame( false ),m_cullingType(CCW),m_fillType(FILL_SOLIDE),m_rs(NULL)
 {
-    m_backTarget = new RenderTarget();
-    m_frontTarget = new RenderTarget();
-
-    //创建前后渲染缓冲
-    m_backTarget->createRenderTarget( width , height , type );
-    m_frontTarget->createRenderTarget( width , height , type );
-
+    
 }
 
 RenderQueue::~RenderQueue()
 {
-    delete m_backTarget;
-    delete m_frontTarget;
 
-    m_backTarget = NULL;
-    m_frontTarget = NULL;
 }
 
 void RenderQueue::beginScene()
 {
-    m_backTarget->reset();
+    m_rs->beginScene();
 }
 
 void RenderQueue::endScene()
 {
-
+	m_rs->endScene();
 }
 
 void RenderQueue::drawRenderInput( RenderInput * input )
@@ -192,8 +182,8 @@ void RenderQueue::faceCulling()
 void RenderQueue::processScreenMap()
 {
     VERTEX_TYPE_TRANSED_PTR vPtrTransed = m_inputData->getTransedVertexData();
-    int width = m_backTarget->getBufferWidth();
-    int height = m_backTarget->getBufferHeight();
+    int width = m_rs->getBufferWidth();
+    int height = m_rs->getBufferHeight();
 
     for( long i = 0 ; i < m_inputData->getVertexCount() ; i++ )
     {
@@ -306,8 +296,8 @@ void RenderQueue::fillTriangle( FACE_TYPE_PTR pFace )
 //填充平顶三角形
 void RenderQueue::fillTopFlatTriangle( VERTEX_TYPE_TRANSED_PTR v0 , VERTEX_TYPE_TRANSED_PTR v1 ,VERTEX_TYPE_TRANSED_PTR v2 )
 {
-    int width = m_backTarget->getBufferWidth();
-    int height = m_backTarget->getBufferHeight();
+    int width = m_rs->getBufferWidth();
+    int height = m_rs->getBufferHeight();
 
     float deltaY = v0->y - v2->y ;
     int yStart = ceil( v0->y );
@@ -398,8 +388,8 @@ void RenderQueue::fillTopFlatTriangle( VERTEX_TYPE_TRANSED_PTR v0 , VERTEX_TYPE_
 //填充平底三角形
 void RenderQueue::fillBottomFlatTriangle( VERTEX_TYPE_TRANSED_PTR v0 , VERTEX_TYPE_TRANSED_PTR v1 ,VERTEX_TYPE_TRANSED_PTR v2 )
 {
-    int width = m_backTarget->getBufferWidth();
-    int height = m_backTarget->getBufferHeight();
+    int width = m_rs->getBufferWidth();
+    int height = m_rs->getBufferHeight();
 
     float deltaY = v0->y - v1->y ;
     int yStart = ceil( v0->y );
@@ -502,8 +492,8 @@ void RenderQueue::drawScanLine( VERTEX_TYPE_TRANSED_PTR v0 , VERTEX_TYPE_TRANSED
 
     int pitch = 0 , tmp = 0 ;
     float r = v0->r , g = v0->g , b = v0->b;
-    unsigned char * pData = m_backTarget->lockBuffer( pitch );
-    COLOR_TYPE type = m_backTarget->getBufferColorType();
+    unsigned char * pData = m_rs->lockBuffer( pitch );
+    COLOR_TYPE type = m_rs->getBufferColorType();
     ColorValue color( 1.0f , 1.0f , 1.0f );
     for( int x = v0->sx ; x <= v1->sx ; x++ )
     {
@@ -528,11 +518,11 @@ void RenderQueue::drawFrame( FACE_TYPE_PTR pFace )
 
 void RenderQueue::drawDDALine( float x1 , float y1 , float x2 , float y2 , ColorValue & val )
 {
-    int width = m_backTarget->getBufferWidth();
-    int height = m_backTarget->getBufferHeight();
-    COLOR_TYPE type = m_backTarget->getBufferColorType();
+    int width = m_rs->getBufferWidth();
+    int height = m_rs->getBufferHeight();
+    COLOR_TYPE type = m_rs->getBufferColorType();
     int pitch = 0;
-    unsigned char * pData = m_backTarget->lockBuffer( pitch );
+    unsigned char * pData = m_rs->lockBuffer( pitch );
 
     float  length , dx , dy ,x , y;
     
@@ -562,48 +552,6 @@ void RenderQueue::drawDDALine( float x1 , float y1 , float x2 , float y2 , Color
 
 void RenderQueue::present()
 {
-    //将后缓冲内容提交
-    HDC hdc;
-    hdc = GetDC(m_mainHwnd);
-
-    int width , height , pitch;
-    COLOR_TYPE type;
-    
-    width = m_backTarget->getBufferWidth();
-    height = m_backTarget->getBufferHeight();
-    type = m_backTarget->getBufferColorType();
-
-    unsigned char * pData = m_backTarget->lockBuffer( pitch );
-    for( int i = 0 ; i < width ; i++ )
-    {
-        for( int j = 0 ; j < height ; j++ )
-        {
-            int tmp = j*pitch + i*type;
-            //因为颜色RGBA进行存储，所以R在高位，a在底位，下面取值时要注意反过来
-            SetPixel( hdc , i , j , RGB(pData[tmp+3] , pData[tmp+2] , pData[tmp+1]) );
-        }
-    }
-    ReleaseDC( m_mainHwnd , hdc );
-
-    //交换缓冲区
-    RenderTarget * tmp = m_backTarget;
-    m_backTarget = m_frontTarget;
-    m_frontTarget = tmp;
-
-    Sleep(10);
+   m_rs->present();
 }
 
-void RenderQueue::setPixel( int x , int y , const ColorValue & val )
-{
-    int width , height;
-    width = m_backTarget->getBufferWidth();
-    height = m_backTarget->getBufferHeight();
-
-    //执行像素裁减
-    if( x < 0 || x >= width )
-        return;
-    if( y < 0 || y >= height )
-        return;
-
-
-}

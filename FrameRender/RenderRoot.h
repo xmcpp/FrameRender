@@ -1,7 +1,7 @@
 #ifndef _RENDERROOT_
 #define _RENDERROOT_
 
-class RenderTarget;
+class RenderSystem;
 class RenderQueue;
 class RenderObject;
 class Camera;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "RenderRoot.h"
-#include "RenderTarget.h"
+#include "RenderSystem.h"
+#include "RenderSystemGDI.h"
 #include "RenderQueue.h"
 #include "RenderObject.h"
 #include "RenderInput.h"
@@ -23,7 +24,12 @@ RenderRoot::~RenderRoot()
 
 void RenderRoot::init( HWND hwnd , int width , int height )
 {
-	m_renderQueue = new RenderQueue( hwnd , width , height );
+	//创建基于GDI的渲染系统
+	RenderSystem * sys = new RenderSystemGDI( hwnd );
+	sys->createRenderSystem( width , height );
+
+	m_renderQueue = new RenderQueue();
+	m_renderQueue->setRenderSystem( sys );
     m_renderQueue->enableDrawFrame( false );
     m_renderQueue->setCullingType(CCW);
     m_renderQueue->setFillType( FILL_WIREFRAME );
