@@ -1,14 +1,34 @@
 #include "stdafx.h"
 #include "ColorValue.h"
 
-int ColorValue::getRGBA()
+int ColorValue::getARGB()
 {
-    int value = (int)( r * 255 ) << 24;
-    value = value | (int)( g * 255 ) << 16;
-    value = value | (int)( b * 255 ) << 8;
-    value = value | (int)( a * 255 );
+    int value = (int)( a * 255 ) << 24;
+    value = value | (int)( r * 255 ) << 16;
+    value = value | (int)( g * 255 ) << 8;
+    value = value | (int)( b * 255 );
 
     return value;
+}
+
+unsigned char ColorValue::getR()
+{
+	return r * 255;
+}
+
+unsigned char ColorValue::getG()
+{
+	return g * 255;
+}
+
+unsigned char ColorValue::getB()
+{
+	return b * 255;
+}
+
+unsigned char ColorValue::getA()
+{
+	return a * 255;
 }
 
 void ColorValue::saturate()

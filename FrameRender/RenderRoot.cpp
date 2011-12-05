@@ -2,6 +2,7 @@
 #include "RenderRoot.h"
 #include "RenderSystem.h"
 #include "RenderSystemGDI.h"
+#include "RenderSystemDX9.h"
 #include "RenderQueue.h"
 #include "RenderObject.h"
 #include "RenderInput.h"
@@ -24,14 +25,25 @@ RenderRoot::~RenderRoot()
 
 void RenderRoot::init( HWND hwnd , int width , int height )
 {
+	/*
+	//首先修改窗口的大小
+	RECT rect;
+	GetWindowRect( hwnd , &rect );
+	SetWindowPos( hwnd , HWND_TOP , rect.left , rect.top , width , height , SWP_SHOWWINDOW );
+	*/
+
 	//创建基于GDI的渲染系统
-	RenderSystem * sys = new RenderSystemGDI( hwnd );
+	//RenderSystem * sys = new RenderSystemGDI( hwnd );
+	//sys->createRenderSystem( width , height );
+	
+	//创建基于Dx9的渲染系统
+	RenderSystem * sys = new RenderSystemDX9( hwnd );
 	sys->createRenderSystem( width , height );
 
 	m_renderQueue = new RenderQueue();
 	m_renderQueue->setRenderSystem( sys );
     m_renderQueue->enableDrawFrame( false );
-    m_renderQueue->setCullingType(CCW);
+    m_renderQueue->setCullingType(NONE);
     m_renderQueue->setFillType( FILL_WIREFRAME );
 }
 

@@ -16,7 +16,11 @@ public:
     void saturate();
 
     //按rgba的方式获得颜色值
-    int getRGBA() ;
+    int getARGB() ;
+	unsigned char getR();
+	unsigned char getG();
+	unsigned char getB();
+	unsigned char getA();
 
 private:
     float r;

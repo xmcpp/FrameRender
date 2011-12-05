@@ -16,7 +16,7 @@ Application::~Application()
 
 void Application::init( HWND hwnd )
 {
-    m_root.init( hwnd , 160 , 120 );
+    m_root.init( hwnd , 256 , 256 );
    
     m_ioSys = new IoSystem( hwnd );
     m_ioSys->initial();

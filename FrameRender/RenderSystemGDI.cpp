@@ -56,8 +56,8 @@ void RenderSystemGDI::present()
 		for( int j = 0 ; j < m_height ; j++ )
 		{
 			int tmp = j*m_pitch + i*m_colorType;
-			//因为颜色RGBA进行存储，所以R在高位，a在底位，下面取值时要注意反过来
-			SetPixel( hdc , i , j , RGB(m_backBuff[tmp+3] , m_backBuff[tmp+2] , m_backBuff[tmp+1]) );
+			//因为颜色ARGB进行存储，所以a在高位，r在底位，下面取值时要注意反过来
+			SetPixel( hdc , i , j , RGB(m_backBuff[tmp+2] , m_backBuff[tmp+1] , m_backBuff[tmp]) );
 		}
 	}
 	ReleaseDC( m_hwnd , hdc );

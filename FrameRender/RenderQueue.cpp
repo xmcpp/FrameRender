@@ -499,10 +499,11 @@ void RenderQueue::drawScanLine( VERTEX_TYPE_TRANSED_PTR v0 , VERTEX_TYPE_TRANSED
     {
         color.setRGB( r , g , b );
         tmp = v0->sy * pitch + x*type;
-        *((int*)(pData + tmp)) = color.getRGBA();
+        *((int*)(pData + tmp)) = color.getARGB();
 
         r += rk; g += gk ; b += bk;
     }
+	m_rs->unLockBuffer();
     
 }
 
@@ -522,7 +523,7 @@ void RenderQueue::drawDDALine( float x1 , float y1 , float x2 , float y2 , Color
     int height = m_rs->getBufferHeight();
     COLOR_TYPE type = m_rs->getBufferColorType();
     int pitch = 0;
-    unsigned char * pData = m_rs->lockBuffer( pitch );
+    DWORD * pData = (DWORD*)(m_rs->lockBuffer( pitch ));
 
     float  length , dx , dy ,x , y;
     
@@ -541,13 +542,20 @@ void RenderQueue::drawDDALine( float x1 , float y1 , float x2 , float y2 , Color
         //Ö´ÐÐÏñËØ²Ã¼õ
         if( x >= 0 && x < width && y >= 0 && y < height )
         {
-            int tmp = int(y)*pitch + int(x)*type;
-            *((int*)(pData + tmp)) = val.getRGBA();
+            int tmp = int(y)*pitch + int(x);//*type;
+            //*((DWORD*)(pData + tmp)) = val.getARGB();
+			pData[tmp] = val.getARGB();
+			//*(pData + tmp) = val.getR();
+			//*(pData + tmp + 1) = val.getG();
+			//*(pData + tmp + 2) = val.getB();
+			//*(pData + tmp + 3) = val.getA();
         }
         x = x + dx;
         y = y + dy;
         i ++ ;
      }
+
+	m_rs->unLockBuffer();
 }
 
 void RenderQueue::present()
